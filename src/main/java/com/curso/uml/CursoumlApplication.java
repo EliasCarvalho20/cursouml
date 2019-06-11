@@ -13,6 +13,7 @@ import com.curso.uml.domain.Cidade;
 import com.curso.uml.domain.Cliente;
 import com.curso.uml.domain.Endereco;
 import com.curso.uml.domain.Estado;
+import com.curso.uml.domain.ItemPedido;
 import com.curso.uml.domain.Pagamento;
 import com.curso.uml.domain.PagamentoComBoleto;
 import com.curso.uml.domain.PagamentoComCartao;
@@ -25,6 +26,7 @@ import com.curso.uml.repositories.CidadeRepository;
 import com.curso.uml.repositories.ClienteRepository;
 import com.curso.uml.repositories.EnderecoRepository;
 import com.curso.uml.repositories.EstadoRepository;
+import com.curso.uml.repositories.ItemPedidoRepository;
 import com.curso.uml.repositories.PagamentoRepository;
 import com.curso.uml.repositories.PedidoRepository;
 import com.curso.uml.repositories.ProdutoRepository;
@@ -48,6 +50,8 @@ public class CursoumlApplication implements CommandLineRunner{
 	private PedidoRepository pedidoRepository;
 	@Autowired
 	private PagamentoRepository pagamentoRepository;
+	@Autowired
+	private ItemPedidoRepository itemPedidoRepository;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(CursoumlApplication.class, args);
@@ -114,5 +118,17 @@ public class CursoumlApplication implements CommandLineRunner{
 		pedidoRepository.save(Arrays.asList(ped1, ped2));		
 		pagamentoRepository.save(Arrays.asList(pagto1, pagto2));
 		
+		ItemPedido ip1 = new ItemPedido(ped1, p1, 0.00, 1, 2000.0);
+		ItemPedido ip2 = new ItemPedido(ped1, p3, 0.00, 2, 80.0);
+		ItemPedido ip3 = new ItemPedido(ped2, p2, 100.0, 1, 800.0);
+		
+		ped1.getItens().addAll(Arrays.asList(ip1, ip2));
+		ped1.getItens().addAll(Arrays.asList(ip3));
+		
+		p1.getItens().addAll(Arrays.asList(ip1));
+		p2.getItens().addAll(Arrays.asList(ip3));
+		p3.getItens().addAll(Arrays.asList(ip2));
+		
+		itemPedidoRepository.save(Arrays.asList(ip1, ip2, ip3));
 	}
 }
