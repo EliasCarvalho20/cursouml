@@ -1,5 +1,6 @@
 package com.curso.uml;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,20 @@ import com.curso.uml.domain.Cidade;
 import com.curso.uml.domain.Cliente;
 import com.curso.uml.domain.Endereco;
 import com.curso.uml.domain.Estado;
+import com.curso.uml.domain.Pagamento;
+import com.curso.uml.domain.PagamentoComBoleto;
+import com.curso.uml.domain.PagamentoComCartao;
+import com.curso.uml.domain.Pedido;
 import com.curso.uml.domain.Produto;
+import com.curso.uml.domain.enums.EstadoPagamento;
 import com.curso.uml.domain.enums.TipoCliente;
 import com.curso.uml.repositories.CategoriaRepository;
 import com.curso.uml.repositories.CidadeRepository;
 import com.curso.uml.repositories.ClienteRepository;
 import com.curso.uml.repositories.EnderecoRepository;
 import com.curso.uml.repositories.EstadoRepository;
+import com.curso.uml.repositories.PagamentoRepository;
+import com.curso.uml.repositories.PedidoRepository;
 import com.curso.uml.repositories.ProdutoRepository;
 
 @SpringBootApplication
@@ -36,6 +44,10 @@ public class CursoumlApplication implements CommandLineRunner{
 	private ClienteRepository clienteRepository;
 	@Autowired
 	private EnderecoRepository enderecoRepository;
+	@Autowired
+	private PedidoRepository pedidoRepository;
+	@Autowired
+	private PagamentoRepository pagamentoRepository;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(CursoumlApplication.class, args);
@@ -86,6 +98,21 @@ public class CursoumlApplication implements CommandLineRunner{
 		clienteRepository.save(Arrays.asList(cli1));
 		enderecoRepository.save(Arrays.asList(e1, e2));
 		
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+		
+		Pedido ped1 = new Pedido(null, sdf.parse("27/05/2019 10:30"), cli1, e1);
+		Pedido ped2 = new Pedido(null, sdf.parse("05/11/2018 15:00"), cli1, e2);
+		
+		Pagamento pagto1 = new PagamentoComCartao(null, EstadoPagamento.QUITADO, ped1, 6); 
+		ped1.setPagamento(pagto1);
+		
+		Pagamento pagto2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, ped2, sdf.parse("10/12/2018 00:00"), null);
+		ped2.setPagamento(pagto2);
+		
+		cli1.getPedidos().addAll(Arrays.asList(ped1, ped2));
+		
+		pedidoRepository.save(Arrays.asList(ped1, ped2));		
+		pagamentoRepository.save(Arrays.asList(pagto1, pagto2));
+		
 	}
-	
 }
